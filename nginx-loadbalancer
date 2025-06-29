@@ -1,0 +1,25 @@
+upstream backend_servers {
+          # round_robin;     # Default method (no directive needed)
+          # least_conn;      # Least connections
+          ip_hash;           # IP hash for session persistence
+          # least_time;      # Least average response time (Nginx Plus)
+          # random;          # Random selection
+          # hash $request_uri; # Generic hash
+          
+          server 172.31.0.122 weight=1;         # Corrected weight syntax
+          server 172.31.6.104 weight=2;         # Removed # before weight
+          server 172.31.15.218 weight=3;        # Removed # before weight
+          server 172.31.0.81 weight=4;          # Removed # before weight
+}
+
+server {
+           listen 80;
+           server_name ec2-3-139-108-253.us-east-2.compute.amazonaws.com;
+
+           location / {
+               proxy_pass http://backend_servers;
+               proxy_set_header Host              $host;
+               proxy_set_header X-Real-IP         $remote_addr;
+               proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
+           }
+}
